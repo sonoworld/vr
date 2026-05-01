@@ -2,38 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SonoWorld Interactive Demo</title>
+  <title>SonoWorld WebXR VR Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Optional analytics. Remove if not needed. -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0KR382CQKG"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-0KR382CQKG');
   </script>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GPQT9S1FWC"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
 
-    gtag('config', 'G-GPQT9S1FWC');
-  </script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       margin: 0;
       overflow: hidden;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #000;
     }
 
     .panel-box {
@@ -61,11 +52,10 @@
       border-bottom: none;
       border-left: none;
       transition: transform 0.25s ease;
+      z-index: 20;
     }
 
-    #controlPanel.panel-collapsed {
-      transform: translateX(-250px);
-    }
+    #controlPanel.panel-collapsed { transform: translateX(-250px); }
 
     #panelToggleBtn {
       position: absolute;
@@ -86,7 +76,7 @@
       justify-content: center;
       color: rgba(255, 255, 255, 0.45);
       transition: left 0.25s ease, background 0.15s ease, color 0.15s ease;
-      z-index: 1001;
+      z-index: 21;
       padding: 0;
       margin: 0;
     }
@@ -102,47 +92,27 @@
       transition: transform 0.25s ease;
     }
 
-    #controlPanel.panel-collapsed + #panelToggleBtn {
-      left: 0;
-    }
+    #controlPanel.panel-collapsed + #panelToggleBtn { left: 0; }
+    #controlPanel.panel-collapsed + #panelToggleBtn svg { transform: rotate(180deg); }
 
-    #controlPanel.panel-collapsed + #panelToggleBtn svg {
-      transform: rotate(180deg);
-    }
-
-    .panel-box::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .panel-box::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
-    }
-
-    .panel-box::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-    }
-
-    .panel-box::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
+    .panel-box::-webkit-scrollbar { width: 8px; }
+    .panel-box::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+    .panel-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+    .panel-box::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
     .panel-section {
       padding: 12px 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
-    .panel-section:last-child {
-      border-bottom: none;
-    }
+    .panel-section:last-child { border-bottom: none; }
 
     .panel-title {
       font-size: 9px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: rgba(255, 255, 255, 0.35);
+      color: rgba(255,255,255,0.35);
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
@@ -151,10 +121,7 @@
       user-select: none;
     }
 
-    .panel-title:hover {
-      color: rgba(255, 255, 255, 0.55);
-    }
-
+    .panel-title:hover { color: rgba(255,255,255,0.55); }
     .panel-title .chevron {
       width: 10px;
       height: 10px;
@@ -163,28 +130,19 @@
       flex-shrink: 0;
     }
 
-    .panel-title.collapsed .chevron {
-      transform: rotate(-90deg);
-    }
-
-    .panel-title.collapsed {
-      margin-bottom: 0;
-    }
+    .panel-title.collapsed .chevron { transform: rotate(-90deg); }
+    .panel-title.collapsed { margin-bottom: 0; }
 
     .panel-body {
       overflow: hidden;
       transition: max-height 0.2s ease, opacity 0.2s ease;
-      max-height: 500px;
+      max-height: 520px;
       opacity: 1;
     }
 
     .panel-body.collapsed {
       max-height: 0;
       opacity: 0;
-    }
-
-    #metrics {
-      background: none;
     }
 
     .metric-row {
@@ -195,18 +153,11 @@
       line-height: 1.3;
     }
 
-    .metric-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .metric-label {
-      color: rgba(255, 255, 255, 0.45);
-      font-size: 11px;
-    }
-
+    .metric-row:last-child { margin-bottom: 0; }
+    .metric-label { color: rgba(255,255,255,0.45); font-size: 11px; }
     .metric-value {
       font-weight: 500;
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255,255,255,0.85);
       font-variant-numeric: tabular-nums;
       font-size: 11px;
       font-feature-settings: 'tnum';
@@ -214,7 +165,7 @@
 
     label {
       display: block;
-      color: rgba(255, 255, 255, 0.55);
+      color: rgba(255,255,255,0.55);
       font-size: 11px;
       font-weight: 500;
       margin-bottom: 5px;
@@ -225,10 +176,10 @@
       padding: 7px 10px;
       font-size: 11px;
       font-family: inherit;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 5px;
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255,255,255,0.9);
       cursor: pointer;
       transition: border-color 0.15s ease, background 0.15s ease;
       margin-bottom: 8px;
@@ -241,30 +192,27 @@
     }
 
     select:hover {
-      background-color: rgba(255, 255, 255, 0.09);
-      border-color: rgba(255, 255, 255, 0.18);
+      background-color: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.18);
     }
 
     select:focus {
       outline: none;
-      border-color: rgba(255, 255, 255, 0.3);
-      background-color: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255,255,255,0.3);
+      background-color: rgba(255,255,255,0.08);
     }
 
-    select option {
-      background: #111827;
-      color: rgba(255, 255, 255, 0.9);
-    }
+    select option { background: #111827; color: rgba(255,255,255,0.9); }
 
     button {
       padding: 7px 12px;
       font-size: 11px;
       font-weight: 500;
       font-family: inherit;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 5px;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255,255,255,0.8);
       cursor: pointer;
       transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
       width: 100%;
@@ -274,65 +222,28 @@
     }
 
     button:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.18);
-      color: rgba(255, 255, 255, 0.95);
-    }
-
-    button:active {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.95);
     }
 
     button:disabled {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.25);
+      background: rgba(255,255,255,0.03);
+      border-color: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.25);
       cursor: not-allowed;
     }
 
     button#loadGaussianScene {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.18);
-      color: rgba(255, 255, 255, 0.95);
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.95);
       font-weight: 600;
     }
 
-    button#loadGaussianScene:hover {
-      background: rgba(255, 255, 255, 0.16);
-      border-color: rgba(255, 255, 255, 0.28);
-    }
-
-    button#loadGaussianScene:disabled {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.25);
-      cursor: not-allowed;
-    }
-
-    button#loadGaussianScene:disabled:hover {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.25);
-    }
-
-    .button-group {
-      display: grid;
-      gap: 6px;
-    }
-
-    .button-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-
-    .button-row button {
-      width: 100%;
-      margin-bottom: 0;
-    }
-
+    .button-group { display: grid; gap: 6px; }
     .controls-label {
-      color: rgba(255, 255, 255, 0.35);
+      color: rgba(255,255,255,0.35);
       font-size: 9px;
       font-weight: 600;
       text-transform: uppercase;
@@ -342,9 +253,7 @@
       display: block;
     }
 
-    .controls-label:first-child {
-      margin-top: 0;
-    }
+    .controls-label:first-child { margin-top: 0; }
 
     .keyboard-shortcuts {
       display: flex;
@@ -358,36 +267,24 @@
       align-items: center;
       padding: 4px 0;
       font-size: 11px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
 
-    .shortcut-row:last-child {
-      border-bottom: none;
-    }
+    .shortcut-row:last-child { border-bottom: none; }
 
     .shortcut-key {
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
       padding: 2px 7px;
       border-radius: 3px;
       font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
       font-weight: 500;
-      color: rgba(255, 255, 255, 0.65);
+      color: rgba(255,255,255,0.65);
       font-size: 10px;
       letter-spacing: 0.02em;
     }
 
-    .shortcut-desc {
-      color: rgba(255, 255, 255, 0.45);
-    }
-
-    .info-note {
-      border-left: 2px solid rgba(255, 255, 255, 0.2);
-      padding: 6px 10px;
-      font-size: 10px;
-      color: rgba(255, 255, 255, 0.4);
-      margin-top: 10px;
-    }
+    .shortcut-desc { color: rgba(255,255,255,0.45); }
 
     #minimap {
       position: absolute;
@@ -395,12 +292,12 @@
       right: 15px;
       width: 160px;
       height: 160px;
-      background: rgba(10, 14, 26, 0.88);
+      background: rgba(10,14,26,0.88);
       backdrop-filter: blur(16px) saturate(180%);
       -webkit-backdrop-filter: blur(16px) saturate(180%);
       border-radius: 8px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.07);
       overflow: hidden;
       z-index: 20;
     }
@@ -431,28 +328,26 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: rgba(255, 255, 255, 0.35);
+      color: rgba(255,255,255,0.35);
       z-index: 10;
     }
-    
+
     .minimap-loading-overlay {
       position: absolute;
       inset: 0;
       display: none;
       align-items: center;
       justify-content: center;
-      background: rgba(10, 14, 26, 0.78);
+      background: rgba(10,14,26,0.78);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
       z-index: 30;
     }
 
-    .minimap-loading-overlay.active {
-      display: flex;
-    }
+    .minimap-loading-overlay.active { display: flex; }
 
     .minimap-loading-text {
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255,255,255,0.9);
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.04em;
@@ -464,16 +359,14 @@
       display: none;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(0,0,0,0.35);
       backdrop-filter: blur(2px);
       -webkit-backdrop-filter: blur(2px);
       z-index: 900;
       pointer-events: auto;
     }
 
-    .main-loading-overlay.active {
-      display: flex;
-    }
+    .main-loading-overlay.active { display: flex; }
 
     .main-loading-card {
       display: flex;
@@ -482,13 +375,13 @@
       gap: 12px;
       padding: 18px 22px;
       border-radius: 12px;
-      background: rgba(10, 14, 26, 0.88);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      background: rgba(10,14,26,0.88);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
     }
 
     .main-loading-text {
-      color: rgba(255, 255, 255, 0.88);
+      color: rgba(255,255,255,0.88);
       font-size: 13px;
       font-weight: 500;
       letter-spacing: 0.02em;
@@ -498,22 +391,20 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.18);
-      border-top-color: rgba(255, 255, 255, 0.88);
+      border: 2px solid rgba(255,255,255,0.18);
+      border-top-color: rgba(255,255,255,0.88);
       animation: main-loading-spin 0.9s linear infinite;
     }
 
     @keyframes main-loading-spin {
-      to {
-        transform: rotate(360deg);
-      }
+      to { transform: rotate(360deg); }
     }
 
     .title-banner {
       position: absolute;
       bottom: 20px;
       right: 20px;
-      color: rgba(255, 255, 255, 0.45);
+      color: rgba(255,255,255,0.45);
       font-size: 11px;
       font-weight: 400;
       text-align: right;
@@ -528,14 +419,12 @@
       margin-bottom: 6px;
     }
 
-    .volume-row:last-child {
-      margin-bottom: 0;
-    }
+    .volume-row:last-child { margin-bottom: 0; }
 
     .volume-channel {
       font-size: 9px;
       font-weight: 600;
-      color: rgba(255, 255, 255, 0.3);
+      color: rgba(255,255,255,0.3);
       width: 10px;
       letter-spacing: 0.05em;
     }
@@ -543,7 +432,7 @@
     .volume-track {
       flex: 1;
       height: 3px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255,255,255,0.08);
       border-radius: 2px;
       overflow: hidden;
     }
@@ -551,7 +440,7 @@
     .volume-fill {
       height: 100%;
       width: 0%;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255,255,255,0.5);
       transition: width 0.1s ease;
       border-radius: 2px;
     }
@@ -559,11 +448,6 @@
     #labelRendererLayer {
       clip-path: inset(0 0 0 250px);
       -webkit-clip-path: inset(0 0 0 250px);
-    }
-    
-    #controlPanel,
-    #panelToggleBtn {
-      z-index: 20;
     }
 
     #controlPanel.panel-collapsed ~ #labelRendererLayer,
@@ -582,10 +466,22 @@
       opacity: 0.45;
     }
 
-    #controlPanel.ui-locked::-webkit-scrollbar {
-      display: none;
+    #controlPanel.ui-locked::-webkit-scrollbar { display: none; }
+
+    .vr-hint {
+      font-size: 10px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.45);
+      border-left: 2px solid rgba(255,255,255,0.18);
+      padding-left: 8px;
+      margin-top: 8px;
+    }
+
+    #VRButton {
+      z-index: 1002 !important;
     }
   </style>
+
   <script type="importmap">
   {
     "imports": {
@@ -595,6 +491,7 @@
     }
   }
   </script>
+
   <script>
     function updateLabelRendererClip() {
       const labelLayer = document.getElementById('labelRendererLayer');
@@ -606,29 +503,15 @@
       labelLayer.style.webkitClipPath = `inset(0 0 0 ${leftInset}px)`;
     }
   </script>
-  <!-- <script>
-    window.addEventListener('pagehide', async () => {
-      try {
-        if (audioCtx && audioCtx.state !== 'closed') {
-          await audioCtx.close();
-          audioCtx = null;
-        }
-      } catch (e) {
-        console.warn('Failed to close audio context:', e);
-      }
-    });
-  </script> -->
 </head>
+
 <body>
-  <!-- Title Banner -->
   <div class="title-banner">
-    Interactive Demo of paper "SonoWorld: From One Image to a 3D Audio-Visual Scene"
+    SonoWorld WebXR VR Demo<br>
+    Quest Browser: load scene, then press ENTER VR
   </div>
 
-  <!-- Control Panel (Left Side) -->
   <div id="controlPanel" class="panel-box">
-
-    <!-- Scene Selection Section -->
     <div id="ui" class="panel-section">
       <div class="panel-title" data-target="body-scene">
         Scene
@@ -637,11 +520,20 @@
       <div class="panel-body" id="body-scene">
         <label for="GsceneSelect">Gaussian Scene</label>
         <select id="GsceneSelect">
-          <!-- <option value="real_scenes_eval/fountain-multi">Real Scene: Fountain</option>
-          <option value="marble-scenes/spring">Synthetic: Cherry</option> -->
           <script>
             (["fountain-multi","kitchen-multi","pool","pool-2","river-bridge-river","river-bridge-train","stream","stream-walk","two-birds","two-birds-siren"]).forEach(s => {
-              const name = {"fountain-multi":"Fountain","kitchen-multi":"Kitchen","pool":"Pool 1","pool-2":"Pool 2","river-bridge-river":"River Bridge (River)","river-bridge-train":"River Bridge (Train)","stream":"Stream","stream-walk":"Stream Walk","two-birds":"Two Birds","two-birds-siren":"Siren"};
+              const name = {
+                "fountain-multi":"Fountain",
+                "kitchen-multi":"Kitchen",
+                "pool":"Pool 1",
+                "pool-2":"Pool 2",
+                "river-bridge-river":"River Bridge (River)",
+                "river-bridge-train":"River Bridge (Train)",
+                "stream":"Stream",
+                "stream-walk":"Stream Walk",
+                "two-birds":"Two Birds",
+                "two-birds-siren":"Siren"
+              };
               document.write(`<option value="real_scenes_eval/${s}">SONOWORLD360: ${name[s]}</option>`);
             });
             (["bright","boatshore","forestfire","forestroom","landscape-river","mountainlake","spring","rocket-launch"]).forEach(s => {
@@ -653,10 +545,12 @@
           </script>
         </select>
         <button id="loadGaussianScene">Load Scene</button>
+        <div class="vr-hint">
+          VR mode: left thumbstick moves, right thumbstick turns. Right trigger toggles clusters. Left trigger toggles centroids.
+        </div>
       </div>
     </div>
 
-    <!-- Visualization Controls Section -->
     <div id="ui2" class="panel-section">
       <div class="panel-title" data-target="body-viz">
         Visualization
@@ -671,7 +565,6 @@
       </div>
     </div>
 
-    <!-- Audio Controls Section -->
     <div class="panel-section">
       <div class="panel-title" data-target="body-audio">
         Audio
@@ -680,14 +573,11 @@
       <div class="panel-body" id="body-audio">
         <span class="controls-label">Rendering Method</span>
         <button id="toggleVolumeAudio">Volume Audio</button>
-        <!-- <span class="controls-label">Spatial Mode</span>
-        <button id="toggleHRIR">HRIR Binaural (Loading...)</button> -->
         <span class="controls-label">Playback</span>
         <button id="togglePlay" disabled>Pause</button>
       </div>
     </div>
 
-    <!-- Stereo Volume Section -->
     <div class="panel-section">
       <div class="panel-title" data-target="body-stereo">
         Stereo Output
@@ -705,7 +595,6 @@
       </div>
     </div>
 
-    <!-- Performance Metrics Section -->
     <div id="metrics" class="panel-section">
       <div class="panel-title" data-target="body-perf">
         Performance
@@ -720,7 +609,6 @@
       </div>
     </div>
 
-    <!-- Controls / Keyboard Shortcuts Section -->
     <div class="panel-section">
       <div class="panel-title" data-target="body-keys">
         Controls
@@ -734,32 +622,25 @@
           <div class="shortcut-row"><span class="shortcut-key">Mouse</span><span class="shortcut-desc">Look Around</span></div>
           <div class="shortcut-row"><span class="shortcut-key">Space</span><span class="shortcut-desc">Play/Pause Audio</span></div>
         </div>
-        <!-- <div class="info-note">Requires an HTTP server — file:// URLs are not supported</div> -->
       </div>
     </div>
-
   </div>
+
   <button id="panelToggleBtn" title="Toggle panel">
     <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M7 1L3 5l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </button>
 
-  <!-- Minimap -->
-  <!-- <div id="minimap">
-    <div class="minimap-title">Overview</div>
-    <div id="minimapContainer" style="position: absolute; top: 0; left: 0; width: 160px; height: 160px;"></div>
-    <canvas id="minimapCanvas2D" width="160" height="160" style="position: absolute; top: 0; left: 0;"></canvas>
-  </div> -->
   <div id="minimap">
     <div class="minimap-title">Overview</div>
     <div id="minimapContainer" style="position: absolute; top: 0; left: 0; width: 160px; height: 160px;"></div>
     <canvas id="minimapCanvas2D" width="160" height="160" style="position: absolute; top: 0; left: 0;"></canvas>
-
     <div id="minimapLoadingOverlay" class="minimap-loading-overlay">
       <div class="minimap-loading-text">Loading...</div>
     </div>
   </div>
+
   <div id="mainLoadingOverlay" class="main-loading-overlay">
     <div class="main-loading-card">
       <div class="main-loading-spinner"></div>
@@ -769,14 +650,227 @@
 
   <script type="module">
     import * as THREE from 'three';
-    import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader.js";
+    import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js';
     import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+    import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
+    import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
     import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
 
-    // Function to create CSS2D text label
+    const c = 343.3;
+
+    const plyLoader = new PLYLoader();
+
+    let audioCtx = null;
+    let hrirBuffers = null;
+    let useHRIR = false;
+    let volumeAudio = true;
+    let sourceVisible = false;
+    let centroidVisible = false;
+    let isSingleSource = false;
+    let minimapLoadTimer = null;
+    let minimapRequestId = 0;
+    let isUiLocked = false;
+
+    const staticSources = [];
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+
+    scene.add(new THREE.HemisphereLight(0x808080, 0x202020));
+    const dl = new THREE.DirectionalLight(0xffffff, 0.5);
+    dl.position.set(5, 10, 7);
+    scene.add(dl);
+
+    // Important: WebXR uses a Y-up reference space. This page keeps the original scene files
+    // unchanged, but camera movement/head pose are handled in Y-up XR world coordinates.
+    const renderWidth = window.innerWidth;
+    const renderHeight = window.innerHeight;
+    const clock = new THREE.Clock();
+
+    let hasScene = false;
+    let sceneLoadRequestId = 0;
+    let isSceneLoading = false;
+    let hasStartedUpdateLoop = false;
+
+    const rootElement = document.createElement('div');
+    rootElement.style.width = renderWidth + 'px';
+    rootElement.style.height = renderHeight + 'px';
+    document.body.appendChild(rootElement);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: false });
+    renderer.setSize(renderWidth, renderHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.xr.enabled = true;
+    rootElement.appendChild(renderer.domElement);
+
+    document.body.appendChild(
+      VRButton.createButton(renderer, {
+        optionalFeatures: ['local-floor', 'bounded-floor', 'hand-tracking']
+      })
+    );
+
+    const camera = new THREE.PerspectiveCamera(65, renderWidth / renderHeight, 0.1, 500);
+    camera.position.set(0, 0, 0);
+    camera.up.set(0, 1, 0);
+
+    // XR rig: move/turn this group in VR. The headset writes the camera pose.
+    const xrRig = new THREE.Group();
+    xrRig.position.set(0, 0, 0);
+    scene.add(xrRig);
+    xrRig.add(camera);
+
+    const viewerWebXRMode =
+      GaussianSplats3D.WebXRMode && GaussianSplats3D.WebXRMode.VR !== undefined
+        ? GaussianSplats3D.WebXRMode.VR
+        : GaussianSplats3D.WebXRMode.None;
+
+    const viewer = new GaussianSplats3D.Viewer({
+      threeScene: scene,
+      selfDrivenMode: false,
+      renderer,
+      camera,
+      useBuiltInControls: false,
+      ignoreDevicePixelRatio: false,
+      gpuAcceleratedSort: false,
+      enableSIMDInSort: false,
+      sharedMemoryForWorkers: false,
+      integerBasedSort: true,
+      halfPrecisionCovariancesOnGPU: true,
+      dynamicScene: false,
+      webXRMode: viewerWebXRMode,
+      renderMode: GaussianSplats3D.RenderMode.OnChange,
+      sceneRevealMode: GaussianSplats3D.SceneRevealMode.Instant,
+      antialiased: false,
+      focalAdjustment: 1.0,
+      logLevel: GaussianSplats3D.LogLevel.None,
+      sphericalHarmonicsDegree: 0,
+      enableOptionalEffects: false,
+      inMemoryCompressionLevel: 2,
+      freeIntermediateSplatData: true
+    });
+
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(renderWidth, renderHeight);
+    labelRenderer.domElement.id = 'labelRendererLayer';
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0';
+    labelRenderer.domElement.style.left = '0';
+    labelRenderer.domElement.style.width = '100%';
+    labelRenderer.domElement.style.height = '100%';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    labelRenderer.domElement.style.overflow = 'hidden';
+    labelRenderer.domElement.style.zIndex = '5';
+    rootElement.appendChild(labelRenderer.domElement);
+    updateLabelRendererClip();
+
+    const cbLastEl = document.getElementById('cbLast');
+    const cbAvgEl = document.getElementById('cbAvg');
+    const sampleRateEl = document.getElementById('sampleRate');
+    const bufferSamplesEl = document.getElementById('bufferSamples');
+    const bufferMsEl = document.getElementById('bufferMs');
+    let cbAvgMs = 0;
+    const cbSmooth = 0.1;
+
+    const playBtn = document.getElementById('togglePlay');
+
+    const listenerPos = new THREE.Vector3();
+    const listenerQuat = new THREE.Quaternion();
+    const prevListenerPos = new THREE.Vector3();
+    const velocity = new THREE.Vector3();
+
+    let yaw = 0;
+    let pitch = 0;
+    const sensitivity = 0.002;
+
+    const move = { forward: 0, back: 0, left: 0, right: 0, up: 0, down: 0 };
+
+    // XR controllers
+    const controllerModelFactory = new XRControllerModelFactory();
+    const controllers = [];
+    const controllerGrips = [];
+
+    for (let i = 0; i < 2; i++) {
+      const controller = renderer.xr.getController(i);
+      controller.userData.index = i;
+      controller.userData.selecting = false;
+      scene.add(controller);
+      controllers.push(controller);
+
+      const grip = renderer.xr.getControllerGrip(i);
+      grip.add(controllerModelFactory.createControllerModel(grip));
+      scene.add(grip);
+      controllerGrips.push(grip);
+
+      controller.addEventListener('connected', (event) => {
+        controller.userData.inputSource = event.data;
+        addControllerRay(controller);
+      });
+
+      controller.addEventListener('disconnected', () => {
+        controller.userData.inputSource = null;
+        while (controller.children.length > 0) controller.remove(controller.children[0]);
+      });
+
+      controller.addEventListener('selectstart', onXRSelectStart);
+      controller.addEventListener('selectend', onXRSelectEnd);
+    }
+
+    function addControllerRay(controller) {
+      if (controller.getObjectByName('controller-ray')) return;
+
+      const geometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0, -2)
+      ]);
+      const material = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.45
+      });
+      const line = new THREE.Line(geometry, material);
+      line.name = 'controller-ray';
+      line.scale.z = 1;
+      controller.add(line);
+    }
+
+    function onXRSelectStart(e) {
+      const controller = e.target;
+      controller.userData.selecting = true;
+
+      const input = controller.userData.inputSource;
+      if (!input) return;
+
+      if (input.handedness === 'right') {
+        toggleClusterVisibility();
+      } else if (input.handedness === 'left') {
+        toggleCentroidVisibility();
+      } else {
+        toggleClusterVisibility();
+      }
+    }
+
+    function onXRSelectEnd(e) {
+      e.target.userData.selecting = false;
+    }
+
+    function toggleCentroidVisibility() {
+      centroidVisible = !centroidVisible;
+      staticSources.forEach(s => {
+        if (s.centroid) s.centroid.visible = centroidVisible;
+        if (s.label) s.label.visible = centroidVisible || sourceVisible;
+      });
+    }
+
+    function toggleClusterVisibility() {
+      sourceVisible = !sourceVisible;
+      staticSources.forEach(s => {
+        if (s.points) s.points.visible = sourceVisible;
+        if (s.label) s.label.visible = centroidVisible || sourceVisible;
+      });
+    }
+
     function createTextLabel(text, color) {
       color = parseInt(color);
-      console.log('Creating label for', text, 'with color', color);
       const div = document.createElement('div');
       div.textContent = text;
       div.style.color = `#${color.toString(16).padStart(6, '0')}`;
@@ -789,38 +883,9 @@
       div.style.borderRadius = '4px';
       div.style.pointerEvents = 'none';
       div.style.userSelect = 'none';
-
-      const label = new CSS2DObject(div);
-      return label;
+      return new CSS2DObject(div);
     }
 
-    // Audio
-    const plyLoader = new PLYLoader();
-    let audioCtx = null;
-    let srcNode = null;
-    let gainNode = null;
-    let stereoPanner = null;
-    let foa = null;
-    const staticSources = [];
-    let volumeAudio = true;
-    let sourceVisible = false;
-    let centroidVisible = false;
-    let isSingleSource = false;
-    let minimapLoadTimer = null;
-    let minimapRequestId = 0;
-    let isUiLocked = false;
-    const panContainer = document.getElementById('panContainer');
-    const panMeter     = document.getElementById('panMeter');
-    const panValue     = document.getElementById('panValue');
-    const gainMeter    = document.getElementById('gainMeter');
-    const gainValue    = document.getElementById('gainValue');
-    const c = 343.3;
-
-    // HRIR-based binaural rendering
-    let hrirBuffers = null; // Will store {W, X, Y, Z} buffers
-    let useHRIR = false; // Toggle between HRIR and stereo panning
-
-    // Load HRIR files for FOA binaural decoding
     async function loadHRIRs(ctx) {
       const hrirDir = 'HRIRs_FOA/';
       const channels = ['W', 'X', 'Y', 'Z'];
@@ -830,35 +895,17 @@
         for (const ch of channels) {
           const url = hrirDir + `FOA_${ch}.wav`;
           const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error(`Failed to load ${url}: ${response.status}`);
-          }
+          if (!response.ok) throw new Error(`Failed to load ${url}: ${response.status}`);
           const arrayBuffer = await response.arrayBuffer();
           buffers[ch] = await ctx.decodeAudioData(arrayBuffer);
-          console.log(`Loaded HRIR for channel ${ch}: ${buffers[ch].length} samples, ${buffers[ch].numberOfChannels} channels`);
         }
         console.log('All HRIRs loaded successfully');
         return buffers;
       } catch (err) {
-        console.error('Failed to load HRIRs:', err);
+        console.warn('HRIR unavailable; using stereo panning fallback:', err);
         return null;
       }
     }
-
-    const scene = new THREE.Scene();
-    scene.add(new THREE.HemisphereLight(0x808080, 0x202020));
-    const dl = new THREE.DirectionalLight(0xffffff, 0.5);
-    dl.position.set(5, 10, 7);
-    scene.add(dl);
-
-    // ==== NEW: 性能 UI 元素引用 ====
-    const cbLastEl       = document.getElementById('cbLast');
-    const cbAvgEl        = document.getElementById('cbAvg');
-    const sampleRateEl   = document.getElementById('sampleRate');
-    const bufferSamplesEl= document.getElementById('bufferSamples');
-    const bufferMsEl     = document.getElementById('bufferMs');
-    let cbAvgMs = 0;
-    const cbSmooth = 0.1; // callback 耗时平均的平滑系数
 
     function updateAudioMetrics() {
       if (!audioCtx) {
@@ -867,12 +914,13 @@
         if (bufferMsEl) bufferMsEl.textContent = '-';
         return;
       }
+
       const sr = audioCtx.sampleRate || 0;
       if (sampleRateEl) sampleRateEl.textContent = sr ? sr.toFixed(0) : '-';
 
       const baseLat = audioCtx.baseLatency || 0;
-      const outLat  = audioCtx.outputLatency || 0;
-      const effectiveLat = baseLat || outLat; // 有些浏览器只给其中一个
+      const outLat = audioCtx.outputLatency || 0;
+      const effectiveLat = baseLat || outLat;
 
       if (effectiveLat && sr) {
         const frames = Math.round(effectiveLat * sr);
@@ -885,6 +933,593 @@
       }
     }
 
+    async function ensureAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
+        updatePlayButton();
+        updateAudioMetrics();
+
+        hrirBuffers = await loadHRIRs(audioCtx);
+        if (hrirBuffers) console.log('HRIR-based binaural rendering is available.');
+      } else {
+        updateAudioMetrics();
+      }
+
+      if (audioCtx.state !== 'running') {
+        try { await audioCtx.resume(); } catch (e) {}
+      }
+    }
+
+    function stopCurrentSceneAudio() {
+      staticSources.forEach(disposeSourceAudio);
+    }
+
+    function disposeSourceAudio(s) {
+      if (s.srcNode) {
+        try { s.srcNode.stop(); } catch (e) {}
+        try { s.srcNode.disconnect(); } catch (e) {}
+      }
+      if (s.gain) {
+        try { s.gain.disconnect(); } catch (e) {}
+      }
+      if (s.stereoPan) {
+        try { s.stereoPan.disconnect(); } catch (e) {}
+      }
+      if (s.foaGains) {
+        Object.values(s.foaGains).forEach(node => {
+          try { node.disconnect(); } catch (e) {}
+        });
+      }
+      if (s.hrirConvolvers) {
+        Object.values(s.hrirConvolvers).forEach(node => {
+          try { node.disconnect(); } catch (e) {}
+        });
+      }
+      if (s.binauralMerger) {
+        try { s.binauralMerger.disconnect(); } catch (e) {}
+      }
+      if (s.sumL) {
+        try { s.sumL.disconnect(); } catch (e) {}
+      }
+      if (s.sumR) {
+        try { s.sumR.disconnect(); } catch (e) {}
+      }
+    }
+
+    function resetVisualizationState() {
+      centroidVisible = false;
+      sourceVisible = false;
+      staticSources.forEach(s => {
+        if (s.centroid) s.centroid.visible = false;
+        if (s.points) s.points.visible = false;
+        if (s.label) s.label.visible = false;
+      });
+    }
+
+    function loadPlyAsPoints(url, opts = {}) {
+      const {
+        size = 0.1,
+        vertexColors = undefined,
+        color = Math.random() * 0xffffff
+      } = opts;
+
+      return new Promise((resolve, reject) => {
+        const loader = new PLYLoader();
+        loader.load(
+          url,
+          geometry => {
+            const useVertexColors =
+              vertexColors !== undefined
+                ? vertexColors
+                : geometry.hasAttribute('color');
+
+            const material = new THREE.PointsMaterial({
+              size,
+              color,
+              vertexColors: useVertexColors
+            });
+
+            const points = new THREE.Points(geometry, material);
+            points.visible = sourceVisible;
+            resolve({ points, color });
+          },
+          undefined,
+          err => reject(new Error(`Load PLY failed: ${err.message || err}`))
+        );
+      });
+    }
+
+    async function loadStaticSourceList(basePath, requestId) {
+      if (requestId !== sceneLoadRequestId) return;
+
+      if (staticSources.length > 0) {
+        staticSources.forEach(s => {
+          disposeSourceAudio(s);
+          if (s.centroid) scene.remove(s.centroid);
+          if (s.points) scene.remove(s.points);
+          if (s.label) scene.remove(s.label);
+        });
+        staticSources.length = 0;
+      }
+
+      await ensureAudioContext();
+      if (requestId !== sceneLoadRequestId) return;
+
+      const jsonPath = basePath + (basePath.endsWith('/') ? '' : '/') + 'render_cfg/choice.json';
+      const audioDir = basePath + (basePath.endsWith('/') ? '' : '/') + 'audio/';
+      const groundingDir = basePath + (basePath.endsWith('/') ? '' : '/') + 'render_cfg/';
+
+      let list;
+      try {
+        const response = await fetch(jsonPath, { cache: 'no-store' });
+        if (requestId !== sceneLoadRequestId) return;
+        if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+        list = await response.json();
+      } catch (err) {
+        console.error(`Failed to fetch JSON file at ${jsonPath}:`, err);
+        return;
+      }
+
+      for (const { class_label, centroid, pcd, audio_path } of list) {
+        if (requestId !== sceneLoadRequestId) return;
+        if (class_label === 'global') continue;
+
+        const buf = await fetch(audioDir + audio_path, { cache: 'no-store' })
+          .then(r => {
+            if (!r.ok) throw new Error(`Audio HTTP error ${r.status}: ${audioDir + audio_path}`);
+            return r.arrayBuffer();
+          })
+          .then(ab => audioCtx.decodeAudioData(ab));
+
+        if (requestId !== sceneLoadRequestId) return;
+
+        const srcNode = audioCtx.createBufferSource();
+        const gain = audioCtx.createGain();
+        const stereoPan = audioCtx.createStereoPanner();
+
+        srcNode.buffer = buf;
+        srcNode.loop = true;
+
+        let hrirConvolvers = null;
+        let foaGains = null;
+        let binauralMerger = null;
+        let sumL = null;
+        let sumR = null;
+
+        if (useHRIR && hrirBuffers) {
+          foaGains = {
+            W: audioCtx.createGain(),
+            X: audioCtx.createGain(),
+            Y: audioCtx.createGain(),
+            Z: audioCtx.createGain()
+          };
+
+          hrirConvolvers = {
+            W: audioCtx.createConvolver(),
+            X: audioCtx.createConvolver(),
+            Y: audioCtx.createConvolver(),
+            Z: audioCtx.createConvolver()
+          };
+
+          hrirConvolvers.W.buffer = hrirBuffers.W;
+          hrirConvolvers.X.buffer = hrirBuffers.X;
+          hrirConvolvers.Y.buffer = hrirBuffers.Y;
+          hrirConvolvers.Z.buffer = hrirBuffers.Z;
+
+          binauralMerger = audioCtx.createChannelMerger(2);
+          sumL = audioCtx.createGain();
+          sumR = audioCtx.createGain();
+
+          srcNode.connect(gain);
+          gain.connect(foaGains.W);
+          gain.connect(foaGains.X);
+          gain.connect(foaGains.Y);
+          gain.connect(foaGains.Z);
+
+          for (const ch of ['W', 'X', 'Y', 'Z']) {
+            const splitter = audioCtx.createChannelSplitter(2);
+            foaGains[ch].connect(hrirConvolvers[ch]);
+            hrirConvolvers[ch].connect(splitter);
+            splitter.connect(sumL, 0);
+            splitter.connect(sumR, 1);
+          }
+
+          sumL.connect(binauralMerger, 0, 0);
+          sumR.connect(binauralMerger, 0, 1);
+          binauralMerger.connect(audioCtx.destination);
+          srcNode.start();
+        } else {
+          srcNode.connect(gain).connect(stereoPan).connect(audioCtx.destination);
+          srcNode.start();
+        }
+
+        const srcSphere = new THREE.Mesh(
+          new THREE.SphereGeometry(0.3, 32, 32),
+          new THREE.MeshStandardMaterial({ color: 0xff4444 })
+        );
+        srcSphere.position.copy(new THREE.Vector3(...centroid));
+        srcSphere.visible = false;
+        scene.add(srcSphere);
+
+        const { points: srcPoints, color: pointColor } = await loadPlyAsPoints(groundingDir + pcd);
+        if (requestId !== sceneLoadRequestId) return;
+        scene.add(srcPoints);
+
+        const textLabel = createTextLabel(class_label, pointColor);
+        textLabel.position.copy(new THREE.Vector3(...centroid));
+        textLabel.visible = false;
+        scene.add(textLabel);
+
+        staticSources.push({
+          pos: new THREE.Vector3(...centroid),
+          srcNode,
+          gain,
+          stereoPan,
+          centroid: srcSphere,
+          points: srcPoints,
+          label: textLabel,
+          foaGains,
+          hrirConvolvers,
+          binauralMerger,
+          sumL,
+          sumR
+        });
+      }
+
+      isSingleSource = staticSources.length === 1;
+      resetVisualizationState();
+      updatePlayButton();
+    }
+
+    function computeFOAEncoding(sourcePos, listenerWorldPos, listenerWorldQuat) {
+      const rel = new THREE.Vector3().subVectors(sourcePos, listenerWorldPos);
+      const distance = rel.length();
+      const direction = rel.normalize();
+
+      const localDir = direction.clone().applyQuaternion(listenerWorldQuat.clone().invert());
+
+      return {
+        W: 1 / Math.sqrt(2),
+        X: localDir.x,
+        Y: localDir.y,
+        Z: localDir.z,
+        distance
+      };
+    }
+
+    function pointSourceRender(s, listenerWorldPos, listenerWorldQuat) {
+      const rel = new THREE.Vector3().subVectors(s.pos, listenerWorldPos);
+      const d = rel.length();
+      const u = rel.normalize();
+
+      const vRel = velocity.dot(u);
+      const att = 1 / Math.max(d, 1);
+
+      const denominator = c - vRel;
+      let playbackRate = 1.0;
+      if (Math.abs(denominator) > 0.01) {
+        playbackRate = c / denominator;
+        playbackRate = Math.max(0.25, Math.min(4.0, playbackRate));
+      }
+
+      s.srcNode.playbackRate.value = playbackRate;
+
+      if (useHRIR && s.foaGains) {
+        const foa = computeFOAEncoding(s.pos, listenerWorldPos, listenerWorldQuat);
+        s.gain.gain.value = att;
+        s.foaGains.W.gain.value = foa.W;
+        s.foaGains.X.gain.value = foa.X;
+        s.foaGains.Y.gain.value = foa.Y;
+        s.foaGains.Z.gain.value = foa.Z;
+      } else {
+        s.gain.gain.value = att;
+        const relLocal = u.clone().applyQuaternion(listenerWorldQuat.clone().invert());
+        s.stereoPan.pan.value = THREE.MathUtils.clamp(relLocal.x, -1, 1);
+      }
+    }
+
+    function computeStereoCluster(listenerWorldPos, listenerWorldQuat, geometry) {
+      const posAttr = geometry.attributes.position;
+      const array = posAttr.array;
+      const N = array.length / 3;
+      const eps = 1e-6;
+      const tempV = new THREE.Vector3();
+
+      let sumW = 0;
+      let sumX = 0;
+
+      const invQuat = listenerWorldQuat.clone().invert();
+
+      for (let i = 0; i < N; i++) {
+        tempV.fromArray(array, i * 3);
+        tempV.sub(listenerWorldPos);
+        tempV.applyQuaternion(invQuat);
+
+        const d = tempV.length();
+        const invD = 1.0 / Math.max(d, 1e-5);
+        const ux = tempV.x * invD;
+        const attn = invD;
+
+        sumW += attn;
+        sumX += ux * attn;
+      }
+
+      const wMean = sumW / N;
+      const xMean = sumX / N;
+
+      return {
+        gain: wMean,
+        pan: THREE.MathUtils.clamp(xMean / (wMean + eps), -1, 1)
+      };
+    }
+
+    function computeFOACluster(listenerWorldPos, listenerWorldQuat, geometry) {
+      const posAttr = geometry.attributes.position;
+      const array = posAttr.array;
+      const N = array.length / 3;
+      const tempV = new THREE.Vector3();
+
+      let sumW = 0;
+      let sumWx = 0;
+      let sumWy = 0;
+      let sumWz = 0;
+      let totalAttn = 0;
+
+      for (let i = 0; i < N; i++) {
+        tempV.fromArray(array, i * 3);
+        const foa = computeFOAEncoding(tempV, listenerWorldPos, listenerWorldQuat);
+        const attn = 1.0 / Math.max(foa.distance, 1.0);
+
+        sumW += foa.W * attn;
+        sumWx += foa.X * attn;
+        sumWy += foa.Y * attn;
+        sumWz += foa.Z * attn;
+        totalAttn += attn;
+      }
+
+      return {
+        W: sumW / N,
+        X: sumWx / N,
+        Y: sumWy / N,
+        Z: sumWz / N,
+        gain: totalAttn / N
+      };
+    }
+
+    function clusterSourceRender(s, listenerWorldPos, listenerWorldQuat) {
+      const rel = new THREE.Vector3().subVectors(s.pos, listenerWorldPos);
+      const u = rel.normalize();
+
+      const vRel = velocity.dot(u);
+      const denominator = c - vRel;
+      let playbackRate = 1.0;
+      if (Math.abs(denominator) > 0.01) {
+        playbackRate = c / denominator;
+        playbackRate = Math.max(0.25, Math.min(4.0, playbackRate));
+      }
+
+      s.srcNode.playbackRate.value = playbackRate;
+
+      if (useHRIR && s.foaGains) {
+        const foa = computeFOACluster(listenerWorldPos, listenerWorldQuat, s.points.geometry);
+        s.gain.gain.value = foa.gain;
+        s.foaGains.W.gain.value = foa.W;
+        s.foaGains.X.gain.value = foa.X;
+        s.foaGains.Y.gain.value = foa.Y;
+        s.foaGains.Z.gain.value = foa.Z;
+      } else {
+        const result = computeStereoCluster(listenerWorldPos, listenerWorldQuat, s.points.geometry);
+        s.gain.gain.value = result.gain;
+        s.stereoPan.pan.value = result.pan;
+      }
+    }
+
+    function updateStaticSources(listenerWorldPos, listenerWorldQuat) {
+      let totalLeftVolume = 0;
+      let totalRightVolume = 0;
+
+      for (const s of staticSources) {
+        if (!volumeAudio) {
+          pointSourceRender(s, listenerWorldPos, listenerWorldQuat);
+        } else {
+          clusterSourceRender(s, listenerWorldPos, listenerWorldQuat);
+        }
+
+        const gain = s.gain.gain.value;
+        const pan = s.stereoPan?.pan?.value ?? 0;
+
+        const leftGain = gain * Math.cos((pan + 1) * Math.PI / 4);
+        const rightGain = gain * Math.sin((pan + 1) * Math.PI / 4);
+
+        totalLeftVolume += leftGain;
+        totalRightVolume += rightGain;
+      }
+
+      const maxVolume = 5;
+      const leftPercent = Math.min(100, (totalLeftVolume / maxVolume) * 100);
+      const rightPercent = Math.min(100, (totalRightVolume / maxVolume) * 100);
+
+      const leftVolumeEl = document.getElementById('leftVolume');
+      const rightVolumeEl = document.getElementById('rightVolume');
+
+      if (leftVolumeEl) leftVolumeEl.style.width = leftPercent + '%';
+      if (rightVolumeEl) rightVolumeEl.style.width = rightPercent + '%';
+    }
+
+    function resetCameraRigToOrigin() {
+      xrRig.position.set(0, 0, 0);
+      xrRig.rotation.set(0, 0, 0);
+
+      camera.position.set(0, 0, 0);
+      yaw = 0;
+      pitch = 0;
+      camera.rotation.order = 'YXZ';
+      camera.rotation.y = yaw;
+      camera.rotation.x = pitch;
+
+      camera.getWorldPosition(prevListenerPos);
+    }
+
+    function getStick(inputSource) {
+      const gp = inputSource?.gamepad;
+      if (!gp || !gp.axes || gp.axes.length < 2) return { x: 0, y: 0 };
+
+      let x = 0;
+      let y = 0;
+
+      if (gp.axes.length >= 4) {
+        x = gp.axes[2] || 0;
+        y = gp.axes[3] || 0;
+      } else {
+        x = gp.axes[0] || 0;
+        y = gp.axes[1] || 0;
+      }
+
+      const deadzone = 0.18;
+      if (Math.abs(x) < deadzone) x = 0;
+      if (Math.abs(y) < deadzone) y = 0;
+
+      return { x, y };
+    }
+
+    function updateXRInput(dt) {
+      if (!renderer.xr.isPresenting) return;
+
+      let moveX = 0;
+      let moveY = 0;
+      let turnX = 0;
+
+      for (const controller of controllers) {
+        const input = controller.userData.inputSource;
+        if (!input) continue;
+
+        const stick = getStick(input);
+
+        if (input.handedness === 'left') {
+          moveX = stick.x;
+          moveY = stick.y;
+        } else if (input.handedness === 'right') {
+          turnX = stick.x;
+        }
+      }
+
+      const headQuat = new THREE.Quaternion();
+      camera.getWorldQuaternion(headQuat);
+
+      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(headQuat);
+      forward.y = 0;
+      if (forward.lengthSq() > 1e-8) forward.normalize();
+
+      const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+      const xrMoveSpeed = 1.0;
+      xrRig.position.addScaledVector(forward, -moveY * xrMoveSpeed * dt);
+      xrRig.position.addScaledVector(right, moveX * xrMoveSpeed * dt);
+
+      const turnSpeed = 1.8;
+      xrRig.rotation.y -= turnX * turnSpeed * dt;
+    }
+
+    function updateDesktopInput(dt) {
+      if (renderer.xr.isPresenting) return;
+
+      const speed = 0.5;
+      const dir = new THREE.Vector3();
+      camera.getWorldDirection(dir);
+      dir.y = 0;
+      if (dir.lengthSq() > 1e-8) dir.normalize();
+
+      const right = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, 1, 0)).normalize();
+
+      camera.position.addScaledVector(dir, speed * (move.forward - move.back) * dt);
+      camera.position.addScaledVector(right, speed * (move.right - move.left) * dt);
+      camera.position.y += speed * (move.up - move.down) * dt;
+    }
+
+    function updateLoop(time, xrFrame) {
+      const cbStart = performance.now();
+      const dt = Math.min(clock.getDelta(), 0.05);
+
+      updateXRInput(dt);
+      updateDesktopInput(dt);
+
+      camera.getWorldPosition(listenerPos);
+      camera.getWorldQuaternion(listenerQuat);
+
+      if (dt > 1e-6) {
+        velocity.subVectors(listenerPos, prevListenerPos).divideScalar(dt);
+      } else {
+        velocity.set(0, 0, 0);
+      }
+
+      if (!isSceneLoading && staticSources.length > 0) {
+        updateStaticSources(listenerPos, listenerQuat);
+      }
+
+      prevListenerPos.copy(listenerPos);
+
+      if (hasScene) {
+        viewer.update();
+        viewer.render();
+
+        // DOM/CSS labels are desktop-only. They will not render into immersive WebXR.
+        if (!renderer.xr.isPresenting) {
+          labelRenderer.render(scene, camera);
+        }
+      }
+
+      if (!renderer.xr.isPresenting) {
+        if (minimapSceneLoaded) {
+          drawMinimap();
+        } else {
+          minimapCtx.clearRect(0, 0, minimapCanvas2D.width, minimapCanvas2D.height);
+        }
+      }
+
+      const cbDur = performance.now() - cbStart;
+      cbAvgMs = cbAvgMs ? (1 - cbSmooth) * cbAvgMs + cbSmooth * cbDur : cbDur;
+
+      if (cbLastEl) cbLastEl.textContent = cbDur.toFixed(3);
+      if (cbAvgEl) cbAvgEl.textContent = cbAvgMs.toFixed(3);
+    }
+
+    // Minimap
+    const minimapContainer = document.getElementById('minimapContainer');
+    const minimapCanvas2D = document.getElementById('minimapCanvas2D');
+    const minimapCtx = minimapCanvas2D.getContext('2d');
+
+    const minimapOrthoCamera = new THREE.PerspectiveCamera(90, 1, 4, 500);
+    minimapOrthoCamera.up.set(0, 0, -1);
+
+    const minimapViewer = new GaussianSplats3D.Viewer({
+      cameraUp: [0, 0, -1],
+      initialCameraPosition: [0, 2, 0],
+      initialCameraLookAt: [0, 0, 0],
+      selfDrivenMode: false,
+      camera: minimapOrthoCamera,
+      useBuiltInControls: false,
+      ignoreDevicePixelRatio: true,
+      gpuAcceleratedSort: false,
+      enableSIMDInSort: false,
+      sharedMemoryForWorkers: false,
+      integerBasedSort: true,
+      halfPrecisionCovariancesOnGPU: false,
+      dynamicScene: false,
+      webXRMode: GaussianSplats3D.WebXRMode.None,
+      renderMode: GaussianSplats3D.RenderMode.Always,
+      sceneRevealMode: GaussianSplats3D.SceneRevealMode.Instant,
+      antialiased: false,
+      logLevel: GaussianSplats3D.LogLevel.None,
+      sphericalHarmonicsDegree: 0,
+      enableOptionalEffects: false,
+      inMemoryCompressionLevel: 2,
+      freeIntermediateSplatData: false,
+      rootElement: minimapContainer
+    });
+
+    minimapViewer.init();
+    let minimapSceneLoaded = false;
+
     async function loadMinimapScene(selectedScene, requestId) {
       try {
         if (minimapSceneLoaded) {
@@ -894,32 +1529,24 @@
 
         if (requestId !== minimapRequestId) return;
 
-        await minimapViewer.addSplatScene(
-          selectedScene,
-          {
-            splatAlphaRemovalThreshold: 5,
-            showLoadingUI: false,
-            position: [0, 0, 0],
-            rotation: [1, 0, 0, 0],
-            scale: [1.0, 1.0, 1.0],
-            progressiveLoad: false,
-          },
-        );
+        await minimapViewer.addSplatScene(selectedScene, {
+          splatAlphaRemovalThreshold: 5,
+          showLoadingUI: false,
+          position: [0, 0, 0],
+          rotation: [1, 0, 0, 0],
+          scale: [1.0, 1.0, 1.0],
+          progressiveLoad: false
+        });
 
         if (requestId !== minimapRequestId) {
-          try {
-            await minimapViewer.removeSplatScene(0);
-          } catch (e) {}
+          try { await minimapViewer.removeSplatScene(0); } catch (e) {}
           return;
         }
 
         minimapSceneLoaded = true;
         setMinimapLoading(false);
-        console.log('Minimap scene loaded:', selectedScene);
       } catch (err) {
-        if (requestId === minimapRequestId) {
-          setMinimapLoading(false);
-        }
+        if (requestId === minimapRequestId) setMinimapLoading(false);
         console.error('Failed to load minimap scene:', err);
       }
     }
@@ -930,14 +1557,11 @@
         minimapLoadTimer = null;
       }
 
-      minimapRequestId += 1; // 让所有旧请求失效
+      minimapRequestId += 1;
 
       if (minimapSceneLoaded) {
-        try {
-          await minimapViewer.removeSplatScene(0);
-        } catch (err) {
-          console.warn('Failed to clear minimap scene:', err);
-        }
+        try { await minimapViewer.removeSplatScene(0); }
+        catch (err) { console.warn('Failed to clear minimap scene:', err); }
         minimapSceneLoaded = false;
       }
     }
@@ -946,9 +1570,7 @@
       minimapRequestId += 1;
       const requestId = minimapRequestId;
 
-      if (minimapLoadTimer) {
-        clearTimeout(minimapLoadTimer);
-      }
+      if (minimapLoadTimer) clearTimeout(minimapLoadTimer);
 
       minimapLoadTimer = setTimeout(() => {
         loadMinimapScene(selectedScene, requestId);
@@ -969,48 +1591,6 @@
       setUiLocked(isLoading);
     }
 
-    function resetVisualizationState() {
-      centroidVisible = false;
-      sourceVisible = false;
-
-      staticSources.forEach(s => {
-        if (s.centroid) s.centroid.visible = false;
-        if (s.points) s.points.visible = false;
-        if (s.label) s.label.visible = false;
-      });
-    }
-
-    function stopCurrentSceneAudio() {
-      staticSources.forEach(s => {
-        if (s.srcNode) {
-          try { s.srcNode.stop(); } catch (e) {}
-          try { s.srcNode.disconnect(); } catch (e) {}
-        }
-        if (s.gain) {
-          try { s.gain.disconnect(); } catch (e) {}
-        }
-        if (s.stereoPan) {
-          try { s.stereoPan.disconnect(); } catch (e) {}
-        }
-
-        if (s.foaGains) {
-          Object.values(s.foaGains).forEach(node => {
-            try { node.disconnect(); } catch (e) {}
-          });
-        }
-
-        if (s.hrirConvolvers) {
-          Object.values(s.hrirConvolvers).forEach(node => {
-            try { node.disconnect(); } catch (e) {}
-          });
-        }
-
-        if (s.binauralMerger) {
-          try { s.binauralMerger.disconnect(); } catch (e) {}
-        }
-      });
-    }
-
     function setUiLocked(isLocked) {
       isUiLocked = isLocked;
 
@@ -1018,589 +1598,118 @@
       const panelToggleBtn = document.getElementById('panelToggleBtn');
       const loadBtn = document.getElementById('loadGaussianScene');
 
-      if (controlPanel) {
-        controlPanel.classList.toggle('ui-locked', isLocked);
-      }
-
-      if (panelToggleBtn) {
-        panelToggleBtn.classList.toggle('ui-locked', isLocked);
-      }
-
-      if (loadBtn) {
-        loadBtn.disabled = isLocked;
-      }
+      if (controlPanel) controlPanel.classList.toggle('ui-locked', isLocked);
+      if (panelToggleBtn) panelToggleBtn.classList.toggle('ui-locked', isLocked);
+      if (loadBtn) loadBtn.disabled = isLocked;
 
       document.querySelectorAll('#controlPanel button, #controlPanel select').forEach(el => {
         el.disabled = isLocked;
       });
     }
-    // =================================
 
-    document.getElementById('toggleVolumeAudio').addEventListener('click', function () {
-      if (isUiLocked) return;
-      volumeAudio = !volumeAudio;
-      this.textContent = volumeAudio ? 'Volume Audio' : 'Point Audio';
-    });
+    function drawMinimap() {
+      camera.getWorldPosition(listenerPos);
 
-    const hrirBtn = document.getElementById('toggleHRIR');
-    // hrirBtn.addEventListener('click', function () {
-    //   if (hrirBuffers) {
-    //     useHRIR = !useHRIR;
-    //     this.textContent = useHRIR ? 'HRIR Binaural (ON)' : 'Stereo Panning';
-    //   }
-    // });
-    if (hrirBtn) {
-      hrirBtn.addEventListener('click', function () {
-        if (isUiLocked) return;
-        if (hrirBuffers) {
-          useHRIR = !useHRIR;
-          this.textContent = useHRIR ? 'HRIR Binaural (ON)' : 'Stereo Panning';
-        }
-      });
-    }
-    document.getElementById('toggleStaticSourceVisibility').addEventListener('click', () => {
-      if (isUiLocked) return;
-      centroidVisible = !centroidVisible;
+      const cameraHeight = 4;
+      minimapOrthoCamera.position.set(
+        listenerPos.x,
+        listenerPos.y + cameraHeight,
+        listenerPos.z
+      );
+      minimapOrthoCamera.lookAt(listenerPos.x, listenerPos.y, listenerPos.z);
 
-      staticSources.forEach(s => {
-        if (s.centroid) {
-          s.centroid.visible = centroidVisible;
-        }
-        if (s.label) {
-          s.label.visible = centroidVisible || sourceVisible;
-        }
-      });
-    });
-    document.getElementById('toggleClusterVisibility').addEventListener('click', () => {
-      if (isUiLocked) return;
-      sourceVisible = !sourceVisible;
+      minimapViewer.update();
+      minimapViewer.render();
 
-      staticSources.forEach(s => {
-        if (s.points) {
-          s.points.visible = sourceVisible;
-        }
-        if (s.label) {
-          s.label.visible = centroidVisible || sourceVisible;
-        }
-      });
-    });
-    document.getElementById('goToOrigin').addEventListener('click', () => {
-      if (isUiLocked) return;
+      const ctx = minimapCtx;
+      const width = minimapCanvas2D.width;
+      const height = minimapCanvas2D.height;
+      const centerX = width / 2;
+      const centerY = height / 2;
 
-      camera.position.set(0, 0, 0);
-      yaw = 0;
-      pitch = 0;
-      camera.rotation.order = 'YXZ';
-      camera.rotation.y = yaw;
-      camera.rotation.x = pitch;
-      prevPos.copy(camera.position);
-    });
+      ctx.clearRect(0, 0, width, height);
 
-    function loadPlyAsPoints(url, opts = {}) {
-      const {
-        size = 0.1,
-        vertexColors = undefined,
-        color = Math.random() * 0xffffff,
-      } = opts;
+      const cameraDir = new THREE.Vector3();
+      camera.getWorldDirection(cameraDir);
 
-      return new Promise((resolve, reject) => {
-        const loader = new PLYLoader();
-        loader.load(
-          url,
-          geometry => {
-            const useVertexColors =
-              vertexColors !== undefined
-                ? vertexColors
-                : geometry.hasAttribute('color');
+      ctx.fillStyle = 'rgba(255, 215, 0, 1)';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 6, 0, Math.PI * 2);
+      ctx.fill();
 
-            let finalColor = color;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
-            const material = new THREE.PointsMaterial({
-              size,
-              color,
-              vertexColors: useVertexColors
-            });
+      const arrowLength = 20;
+      const arrowAngle = Math.atan2(cameraDir.x, cameraDir.z);
+      const arrowEndX = centerX + Math.sin(arrowAngle) * arrowLength;
+      const arrowEndY = centerY + Math.cos(arrowAngle) * arrowLength;
 
-            const points = new THREE.Points(geometry, material);
-            points.visible = sourceVisible;
-            resolve({ points, color: finalColor });
-          },
-          xhr => {},
-          err => reject(new Error(`Load PLY failed: ${err.message}`))
-        );
-      });
+      ctx.strokeStyle = 'rgba(255, 215, 0, 1)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(arrowEndX, arrowEndY);
+      ctx.stroke();
+
+      const arrowHeadSize = 7;
+      const angle1 = arrowAngle + Math.PI * 0.75;
+      const angle2 = arrowAngle - Math.PI * 0.75;
+
+      ctx.fillStyle = 'rgba(255, 215, 0, 1)';
+      ctx.beginPath();
+      ctx.moveTo(arrowEndX, arrowEndY);
+      ctx.lineTo(arrowEndX + Math.sin(angle1) * arrowHeadSize, arrowEndY + Math.cos(angle1) * arrowHeadSize);
+      ctx.lineTo(arrowEndX + Math.sin(angle2) * arrowHeadSize, arrowEndY + Math.cos(angle2) * arrowHeadSize);
+      ctx.closePath();
+      ctx.fill();
+
+      const fov = camera.fov * (Math.PI / 180);
+      const fovLength = 30;
+      const leftAngle = arrowAngle + fov / 2;
+      const rightAngle = arrowAngle - fov / 2;
+      const leftX = centerX + Math.sin(leftAngle) * fovLength;
+      const leftY = centerY + Math.cos(leftAngle) * fovLength;
+      const rightX = centerX + Math.sin(rightAngle) * fovLength;
+      const rightY = centerY + Math.cos(rightAngle) * fovLength;
+
+      ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)';
+      ctx.fillStyle = 'rgba(255, 215, 0, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(leftX, leftY);
+      ctx.arc(centerX, centerY, fovLength, -leftAngle + Math.PI / 2, -rightAngle + Math.PI / 2, false);
+      ctx.lineTo(centerX, centerY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.font = '9px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`X: ${listenerPos.x.toFixed(1)} Z: ${listenerPos.z.toFixed(1)}`, 5, height - 5);
     }
 
-    async function loadStaticSourceList(basePath, requestId) {
-      if (requestId !== sceneLoadRequestId) return;
-      if (staticSources.length > 0) {
-        staticSources.forEach(s => {
-          if (s.srcNode) {
-            try { s.srcNode.stop(); } catch (e) {}
-            try { s.srcNode.disconnect(); } catch (e) {}
-          }
-          if (s.gain) {
-            try { s.gain.disconnect(); } catch (e) {}
-          }
-          if (s.stereoPan) {
-            try { s.stereoPan.disconnect(); } catch (e) {}
-          }
-          if (s.foaGains) {
-            Object.values(s.foaGains).forEach(node => {
-              try { node.disconnect(); } catch (e) {}
-            });
-          }
-          if (s.hrirConvolvers) {
-            Object.values(s.hrirConvolvers).forEach(node => {
-              try { node.disconnect(); } catch (e) {}
-            });
-          }
-          if (s.binauralMerger) {
-            try { s.binauralMerger.disconnect(); } catch (e) {}
-          }
-
-          if (s.centroid) scene.remove(s.centroid);
-          if (s.points) scene.remove(s.points);
-          if (s.label) scene.remove(s.label);
-        });
-        staticSources.length = 0;
-      }
-
+    function updatePlayButton() {
       if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)({
-          sampleRate: 48000
-        });
-        updatePlayButton();
-        updateAudioMetrics(); // ==== NEW: 初始化时更新一次 ====
-
-        // Load HRIRs for binaural rendering
-        hrirBuffers = await loadHRIRs(audioCtx);
-        if (requestId !== sceneLoadRequestId) return;
-        if (hrirBuffers) {
-          console.log('HRIR-based binaural rendering enabled');
-          // useHRIR = true;
-          // hrirBtn.textContent = 'HRIR Binaural (ON)';
-          // hrirBtn.disabled = false;
-        } else {
-          // hrirBtn.textContent = 'HRIR Unavailable';
-          // hrirBtn.disabled = true;
-        }
-        // hrirBtn.textContent = useHRIR ? 'HRIR Binaural (ON)' : 'Stereo Panning';
-        if (hrirBtn) {
-          hrirBtn.textContent = useHRIR ? 'HRIR Binaural (ON)' : 'Stereo Panning';
-        }
-      } else {
-        updateAudioMetrics(); // ==== NEW: 再 load 场景时也更新一下 ====
-      }
-
-      const jsonPath = basePath + (basePath.endsWith('/') ? '' : '/') + 'render_cfg/choice.json';
-      const audioDir = basePath + (basePath.endsWith('/') ? '' : '/') + 'audio/';
-      const groundingDir = basePath + (basePath.endsWith('/') ? '' : '/') + 'render_cfg/';
-      
-      let list;
-      try {
-        const response = await fetch(jsonPath, { cache: 'no-store' });
-        if (requestId !== sceneLoadRequestId) return;
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        list = await response.json();
-        if (requestId !== sceneLoadRequestId) return;
-      } catch (err) {
-        console.log(`Failed to fetch JSON file at ${jsonPath}:`, err);
+        playBtn.disabled = true;
+        playBtn.textContent = 'Play';
         return;
       }
-
-      for (const { class_label, centroid, pcd, audio_path} of list) {
-
-        if (class_label === 'global') {
-          continue;
-        }
-
-        const buf = await fetch(audioDir + audio_path, { cache: 'no-store' })
-        .then(r => r.arrayBuffer())
-        .then(ab => audioCtx.decodeAudioData(ab));
-        if (requestId !== sceneLoadRequestId) return;
-
-        const srcNode     = audioCtx.createBufferSource();
-        const gain        = audioCtx.createGain();
-        const stereoPan   = audioCtx.createStereoPanner();
-
-        srcNode.buffer = buf;
-        srcNode.loop   = true;
-
-        // Create HRIR convolution nodes if available
-        let hrirConvolvers = null;
-        let foaGains = null;
-        let binauralMerger = null;
-
-        if (useHRIR && hrirBuffers) {
-          // Create FOA channel gains (W, X, Y, Z)
-          foaGains = {
-            W: audioCtx.createGain(),
-            X: audioCtx.createGain(),
-            Y: audioCtx.createGain(),
-            Z: audioCtx.createGain()
-          };
-
-          // Create convolver nodes for each FOA channel
-          hrirConvolvers = {
-            W: audioCtx.createConvolver(),
-            X: audioCtx.createConvolver(),
-            Y: audioCtx.createConvolver(),
-            Z: audioCtx.createConvolver()
-          };
-
-          // Set HRIR impulse responses
-          hrirConvolvers.W.buffer = hrirBuffers.W;
-          hrirConvolvers.X.buffer = hrirBuffers.X;
-          hrirConvolvers.Y.buffer = hrirBuffers.Y;
-          hrirConvolvers.Z.buffer = hrirBuffers.Z;
-
-          // Create merger node to combine binaural outputs (2 channels)
-          binauralMerger = audioCtx.createChannelMerger(2);
-
-          // Audio graph for HRIR rendering:
-          // srcNode -> gain -> split to 4 FOA channels ->
-          // each FOA gain -> convolver -> merge to stereo -> destination
-
-          // Connect source to each FOA gain
-          srcNode.connect(gain);
-          gain.connect(foaGains.W);
-          gain.connect(foaGains.Y);
-          gain.connect(foaGains.X);
-          gain.connect(foaGains.Z);
-
-          // Connect each FOA channel through its convolver
-          // Each convolver output is stereo, we need to sum them
-          const sumL = audioCtx.createGain();
-          const sumR = audioCtx.createGain();
-          const splitters = {};
-
-          for (const ch of ['W', 'X', 'Y', 'Z']) {
-            // Create splitter to separate L/R from convolver output
-            splitters[ch] = audioCtx.createChannelSplitter(2);
-            foaGains[ch].connect(hrirConvolvers[ch]);
-            hrirConvolvers[ch].connect(splitters[ch]);
-
-            // Sum left channels
-            splitters[ch].connect(sumL, 0);
-            // Sum right channels
-            splitters[ch].connect(sumR, 1);
-          }
-
-          // Merge summed L/R into stereo output
-          sumL.connect(binauralMerger, 0, 0);
-          sumR.connect(binauralMerger, 0, 1);
-          binauralMerger.connect(audioCtx.destination);
-
-          srcNode.start();
-        } else {
-          // Fallback to stereo panning
-          srcNode.connect(gain).connect(stereoPan).connect(audioCtx.destination);
-          srcNode.start();
-        }
-        
-        const src_sphere = new THREE.Mesh(
-          new THREE.SphereGeometry(0.3, 32, 32),
-          new THREE.MeshStandardMaterial({ color: 0xff4444 })
-        );
-        src_sphere.position.copy(new THREE.Vector3(...centroid));
-        src_sphere.visible = false;
-        scene.add(src_sphere);
-
-        const { points: src_xyzs, color: pointColor } = await loadPlyAsPoints(groundingDir + pcd);
-        if (requestId !== sceneLoadRequestId) return;
-        scene.add(src_xyzs);
-
-        // Create text label with same color as point cloud
-        const textLabel = createTextLabel(class_label, pointColor);
-        textLabel.position.copy(new THREE.Vector3(...centroid));
-        // textLabel.position.z; // Offset slightly above centroid
-        textLabel.visible = false; // Initially hidden, shown when centroid or cluster is visible
-        scene.add(textLabel);
-
-        staticSources.push({
-          pos: new THREE.Vector3(...centroid),
-          srcNode, gain, stereoPan, centroid: src_sphere, points: src_xyzs, label: textLabel,
-          // HRIR-specific nodes
-          foaGains, hrirConvolvers, binauralMerger
-        });
-      }
-      isSingleSource = (staticSources.length === 1);
-      resetVisualizationState();
+      playBtn.disabled = false;
+      playBtn.textContent = audioCtx.state === 'running' ? 'Pause' : 'Play';
     }
 
-    function setupAudioGraph() {
-      stereoPanner = audioCtx.createStereoPanner();
-      srcNode.connect(gainNode).connect(stereoPanner).connect(audioCtx.destination);
+    async function toggleAudioPlay() {
+      if (!audioCtx) return;
+
+      if (audioCtx.state === 'running') await audioCtx.suspend();
+      else await audioCtx.resume();
+
+      updatePlayButton();
     }
-
-    // Compute FOA encoding coefficients for a point source
-    // Returns {W, X, Y, Z} gains for First-Order Ambisonics
-    function computeFOAEncoding(sourcePos, listenerPos, listenerQuaternion) {
-      // Get direction vector from listener to source in world space
-      const rel = new THREE.Vector3().subVectors(sourcePos, listenerPos);
-      const distance = rel.length();
-      const direction = rel.normalize();
-
-      // Transform direction to listener's local coordinate frame
-      const localDir = direction.clone().applyQuaternion(listenerQuaternion.clone().invert());
-
-      // Normalize to unit vector
-      const x = localDir.x;
-      const y = localDir.y;
-      const z = localDir.z;
-
-      // FOA encoding for a point source (N3D normalization)
-      // W = omnidirectional component (0th order)
-      // X, Y, Z = directional components (1st order)
-      const sqrt2 = Math.sqrt(2);
-
-      return {
-        W: 1 / sqrt2,        // W channel (omnidirectional)
-        X: x,                // X channel (left-right)
-        Y: y,                // Y channel (front-back)
-        Z: z,                // Z channel (up-down)
-        distance: distance
-      };
-    }
-
-    function pointSourceRender(s, camera) {
-      const rel = new THREE.Vector3().subVectors(s.pos, camera.position);
-      const d   = rel.length();
-      const u   = rel.normalize();
-
-      const vRel = velocity.dot(u);
-      const att  = 1 / Math.max(d, 1);
-
-      // Calculate Doppler effect with bounds checking
-      const denominator = c - vRel;
-      let playbackRate = 1.0;
-      if (Math.abs(denominator) > 0.01) { // Prevent division by very small numbers
-        playbackRate = c / denominator;
-        // Clamp to reasonable range (0.25x to 4x speed)
-        playbackRate = Math.max(0.25, Math.min(4.0, playbackRate));
-      }
-
-      s.srcNode.playbackRate.value = playbackRate;
-
-      if (useHRIR && s.foaGains) {
-        // Use HRIR-based rendering with FOA encoding
-        const foa = computeFOAEncoding(s.pos, camera.position, camera.quaternion);
-        s.gain.gain.value = att;
-        s.foaGains.W.gain.value = foa.W;
-        s.foaGains.X.gain.value = foa.X;
-        s.foaGains.Y.gain.value = foa.Y;
-        s.foaGains.Z.gain.value = foa.Z;
-      } else {
-        // Fallback to stereo panning
-        s.gain.gain.value = att;
-        const relLocal = u.clone().applyQuaternion(camera.quaternion.clone().invert());
-        s.stereoPan.pan.value = relLocal.x;
-      }
-    }
-
-    function computeStereoTHREE(camera, geometry) {
-      const posAttr = geometry.attributes.position;
-      const array = posAttr.array;
-      const N = array.length / 3;
-      const eps = 1e-6;
-
-      const tempV = new THREE.Vector3();
-
-      let sumW = 0;
-      let sumX = 0;
-
-      for (let i = 0; i < N; i++) {
-        tempV.fromArray(array, i * 3).clone();
-        tempV.sub(camera.position);
-        tempV.applyQuaternion(camera.quaternion.clone().invert());
-
-        const d = tempV.length();
-        const invD = 1.0 / Math.max(d, 1e-5);
-        const ux = tempV.x * invD;
-
-        const attn = invD;
-
-        sumW += attn;
-        sumX += ux * attn;
-      }
-
-      const wMean = sumW / N;
-      const xMean = sumX / N;
-
-      const pan = Math.max(-1, Math.min(1, xMean / (wMean + eps)));
-      return { gain: wMean, pan };
-    }
-
-    // Compute FOA encoding for a cluster/volume of points
-    function computeFOACluster(camera, geometry) {
-      const posAttr = geometry.attributes.position;
-      const array = posAttr.array;
-      const N = array.length / 3;
-      const eps = 1e-6;
-
-      const tempV = new THREE.Vector3();
-
-      let sumW = 0, sumWx = 0, sumWy = 0, sumWz = 0;
-      let totalAttn = 0;
-
-      for (let i = 0; i < N; i++) {
-        tempV.fromArray(array, i * 3);
-        const foa = computeFOAEncoding(tempV, camera.position, camera.quaternion);
-        const d = foa.distance;
-        const attn = 1.0 / Math.max(d, 1.0);
-
-        sumW += foa.W * attn;
-        sumWx += foa.X * attn;
-        sumWy += foa.Y * attn;
-        sumWz += foa.Z * attn;
-        totalAttn += attn;
-      }
-
-      const avgAttn = totalAttn / N;
-
-      return {
-        W: sumW / N,
-        X: sumWx / N,
-        Y: sumWy / N,
-        Z: sumWz / N,
-        gain: avgAttn
-      };
-    }
-
-    function clusterSourceRender(s, camera) {
-      const rel = new THREE.Vector3().subVectors(s.pos, camera.position);
-      const u   = rel.normalize();
-
-      const vRel = velocity.dot(u);
-
-      // Calculate Doppler effect with bounds checking
-      const denominator = c - vRel;
-      let playbackRate = 1.0;
-      if (Math.abs(denominator) > 0.01) { // Prevent division by very small numbers
-        playbackRate = c / denominator;
-        // Clamp to reasonable range (0.25x to 4x speed)
-        playbackRate = Math.max(0.25, Math.min(4.0, playbackRate));
-      }
-
-      s.srcNode.playbackRate.value = playbackRate;
-
-      if (useHRIR && s.foaGains) {
-        // Use HRIR-based rendering with FOA cluster encoding
-        const foa = computeFOACluster(camera, s.points.geometry);
-        s.gain.gain.value = foa.gain;
-        s.foaGains.W.gain.value = foa.W;
-        s.foaGains.X.gain.value = foa.X;
-        s.foaGains.Y.gain.value = foa.Y;
-        s.foaGains.Z.gain.value = foa.Z;
-      } else {
-        // Fallback to stereo panning
-        const result = computeStereoTHREE(camera, s.points.geometry);
-        s.gain.gain.value = result.gain;
-        s.stereoPan.pan.value = result.pan;
-      }
-    }
-
-    function updateStaticSources() {
-      let totalLeftVolume = 0;
-      let totalRightVolume = 0;
-
-      for (const s of staticSources) {
-        if (!volumeAudio) {
-          pointSourceRender(s, camera);
-        } else {
-          clusterSourceRender(s, camera);
-        }
-
-        // Calculate left/right volumes based on pan and gain
-        const gain = s.gain.gain.value;
-        const pan = s.stereoPan.pan.value; // -1 (left) to 1 (right)
-
-        // Convert pan to left/right gains using equal power panning
-        const leftGain = gain * Math.cos((pan + 1) * Math.PI / 4);
-        const rightGain = gain * Math.sin((pan + 1) * Math.PI / 4);
-
-        totalLeftVolume += leftGain;
-        totalRightVolume += rightGain;
-      }
-
-      // Update volume bars (normalize and clamp to 0-100%)
-      const maxVolume = 5; // Adjust this to change sensitivity
-      const leftPercent = Math.min(100, (totalLeftVolume / maxVolume) * 100);
-      const rightPercent = Math.min(100, (totalRightVolume / maxVolume) * 100);
-
-      const leftVolumeEl = document.getElementById('leftVolume');
-      const rightVolumeEl = document.getElementById('rightVolume');
-
-      if (leftVolumeEl) leftVolumeEl.style.width = leftPercent + '%';
-      if (rightVolumeEl) rightVolumeEl.style.width = rightPercent + '%';
-    }
-
-    const renderWidth = innerWidth;
-    const renderHeight = innerHeight;
-    const clock = new THREE.Clock();
-    
-    let hasScene = false;
-    let sceneLoadRequestId = 0;
-    let isSceneLoading = false;
-
-    const rootElement = document.createElement('div');
-    rootElement.style.width = renderWidth + 'px';
-    rootElement.style.height = renderHeight + 'px';
-    document.body.appendChild(rootElement);
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: false
-    });
-    renderer.setSize(renderWidth, renderHeight);
-    rootElement.appendChild(renderer.domElement);
-
-    const labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(renderWidth, renderHeight);
-    labelRenderer.domElement.id = 'labelRendererLayer';
-    labelRenderer.domElement.style.position = 'absolute';
-    labelRenderer.domElement.style.top = '0';
-    labelRenderer.domElement.style.left = '0';
-    labelRenderer.domElement.style.width = '100%';
-    labelRenderer.domElement.style.height = '100%';
-    labelRenderer.domElement.style.pointerEvents = 'none';
-    labelRenderer.domElement.style.overflow = 'hidden';
-    labelRenderer.domElement.style.zIndex = '5';
-    rootElement.appendChild(labelRenderer.domElement);
-
-    updateLabelRendererClip();
-
-    const camera = new THREE.PerspectiveCamera(65, renderWidth / renderHeight, 0.1, 500);
-    camera.position.copy(new THREE.Vector3().fromArray([0, 0, 0]));
-    camera.up = new THREE.Vector3().fromArray([0, 0, 1]).normalize();
-
-    const viewer = new GaussianSplats3D.Viewer({
-      'threeScene': scene,
-      'selfDrivenMode': false,
-      'renderer': renderer,
-      'camera': camera,
-      'useBuiltInControls': false,
-      'ignoreDevicePixelRatio': false,
-      'gpuAcceleratedSort': false,
-      'enableSIMDInSort': false,
-      'sharedMemoryForWorkers': false,
-      'integerBasedSort': true,
-      'halfPrecisionCovariancesOnGPU': true,
-      'dynamicScene': false,
-      'webXRMode': GaussianSplats3D.WebXRMode.None,
-      'renderMode': GaussianSplats3D.RenderMode.OnChange,
-      'sceneRevealMode': GaussianSplats3D.SceneRevealMode.Instant,
-      'antialiased': false,
-      'focalAdjustment': 1.0,
-      'logLevel': GaussianSplats3D.LogLevel.None,
-      'sphericalHarmonicsDegree': 0,
-      'enableOptionalEffects': false,
-      'inMemoryCompressionLevel': 2,
-      'freeIntermediateSplatData': true
-    });
-    
 
     function onWindowResize() {
       const w = window.innerWidth;
@@ -1613,244 +1722,38 @@
       camera.updateProjectionMatrix();
       updateLabelRendererClip();
     }
+
     window.addEventListener('resize', onWindowResize);
 
-    const prevPos = camera.position.clone();
-    const velocity = new THREE.Vector3();
-
-    // Minimap setup - use separate container and canvas for rendering
-    const minimapContainer = document.getElementById('minimapContainer');
-    const minimapCanvas2D = document.getElementById('minimapCanvas2D');
-    const minimapCtx = minimapCanvas2D.getContext('2d');
-    const minimapScale = 10; // Scale factor for the minimap (higher = more zoomed in)
-    const minimapRange = 20; // Range in world units to display
-
-    // Create orthogonal camera for minimap rendering
-    const minimapSize = 20; // World units to show
-    // const minimapOrthoCamera = new THREE.OrthographicCamera(
-    //   -minimapSize / 2, minimapSize / 2,
-    //   minimapSize / 2, -minimapSize / 2,
-    //   1, 2000
-    // );
-    const minimapOrthoCamera = new THREE.PerspectiveCamera(90, 1, 4, 500);
-    minimapOrthoCamera.up.set(0, 0, -1); // Set Z as down for top-down view
-
-    // Create minimap viewer with Gaussian renderer
-    const minimapViewer = new GaussianSplats3D.Viewer({
-      'cameraUp': [0, 0, -1],
-      'initialCameraPosition': [0, 2, 0],
-      'initialCameraLookAt': [0, 0, 0],
-      'selfDrivenMode': false,
-      'camera': minimapOrthoCamera,
-      'useBuiltInControls': false,
-      'ignoreDevicePixelRatio': true,
-      'gpuAcceleratedSort': false,
-      'enableSIMDInSort': false,
-      'sharedMemoryForWorkers': false,
-      'integerBasedSort': true,
-      'halfPrecisionCovariancesOnGPU': false,
-      'dynamicScene': false,
-      'webXRMode': GaussianSplats3D.WebXRMode.None,
-      'renderMode': GaussianSplats3D.RenderMode.Always,
-      'sceneRevealMode': GaussianSplats3D.SceneRevealMode.Instant,
-      'antialiased': false,
-      // 'focalAdjustment': 1.0,
-      'logLevel': GaussianSplats3D.LogLevel.None,
-      'sphericalHarmonicsDegree': 0,
-      'enableOptionalEffects': false,
-      'inMemoryCompressionLevel': 2,
-      'freeIntermediateSplatData': false,
-      'rootElement': minimapContainer
+    renderer.domElement.addEventListener('click', () => {
+      if (!renderer.xr.isPresenting) {
+        renderer.domElement.requestPointerLock();
+      }
     });
 
-    minimapViewer.init();
-
-    // Track if minimap scene is loaded
-    let minimapSceneLoaded = false;
-    let hasStartedUpdateLoop = false;
-
-    let lastSourceCount = 0;
-
-    function drawMinimap() {
-      // Position orthogonal camera above the main camera
-      const cameraHeight = 4; // Height above main camera
-      minimapOrthoCamera.position.set(
-        camera.position.x,
-        camera.position.y + cameraHeight, // Look from above
-        camera.position.z
-      );
-      // minimapOrthoCamera.lookAt(0, -1, 0);
-      minimapOrthoCamera.lookAt(
-        camera.position.x,
-        camera.position.y,
-        camera.position.z
-      );
-
-      // Adjust near/far planes to show content below main camera's height
-      // The ortho camera is at (camera.y + 20), looking down
-      // To show content below the main camera (camera.y), we need:
-      // - near plane at distance cameraHeight (which is at main camera.y level)
-      // - far plane much further down to capture everything below
-      // minimapOrthoCamera.near = 0.1; // Start at main camera level
-      // minimapOrthoCamera.far = 500; // Extend far down
-      // minimapOrthoCamera.updateProjectionMatrix();
-
-      // Update and render the Gaussian splats minimap
-      minimapViewer.update();
-      minimapViewer.render();
-
-      // Now draw 2D overlay elements on top
-      const ctx = minimapCtx;
-      const width = minimapCanvas2D.width;
-      const height = minimapCanvas2D.height;
-      const centerX = width / 2;
-      const centerY = height / 2;
-
-      // Clear the 2D canvas before drawing
-      ctx.clearRect(0, 0, width, height);
-
-      // Get camera direction in XZ plane
-      const cameraDir = new THREE.Vector3();
-      camera.getWorldDirection(cameraDir);
-
-      // Draw camera position (center of minimap)
-      ctx.fillStyle = 'rgba(255, 215, 0, 1)'; // Bright gold color for visibility
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, 6, 0, Math.PI * 2);
-      ctx.fill();
-      // Add a border for extra visibility
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Draw camera direction indicator (arrow)
-      const arrowLength = 20;
-      const arrowAngle = Math.atan2(cameraDir.x, cameraDir.z);
-      const arrowEndX = centerX + Math.sin(arrowAngle) * arrowLength;
-      const arrowEndY = centerY + Math.cos(arrowAngle) * arrowLength;
-
-      // Draw main direction line
-      ctx.strokeStyle = 'rgba(255, 215, 0, 1)'; // Gold color to match center
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(arrowEndX, arrowEndY);
-      ctx.stroke();
-
-      // Draw arrowhead
-      const arrowHeadSize = 7;
-      const angle1 = arrowAngle + Math.PI * 0.75;
-      const angle2 = arrowAngle - Math.PI * 0.75;
-
-      ctx.fillStyle = 'rgba(255, 215, 0, 1)'; // Gold color to match center
-      ctx.beginPath();
-      ctx.moveTo(arrowEndX, arrowEndY);
-      ctx.lineTo(arrowEndX + Math.sin(angle1) * arrowHeadSize, arrowEndY + Math.cos(angle1) * arrowHeadSize);
-      ctx.lineTo(arrowEndX + Math.sin(angle2) * arrowHeadSize, arrowEndY + Math.cos(angle2) * arrowHeadSize);
-      ctx.closePath();
-      ctx.fill();
-
-      // Draw field of view cone
-      const fov = camera.fov * (Math.PI / 180);
-      const fovLength = 30;
-      const leftAngle = arrowAngle + fov / 2;
-      const rightAngle = arrowAngle - fov / 2;
-
-      // Calculate the endpoints of the FOV cone
-      const leftX = centerX + Math.sin(leftAngle) * fovLength;
-      const leftY = centerY + Math.cos(leftAngle) * fovLength;
-      const rightX = centerX + Math.sin(rightAngle) * fovLength;
-      const rightY = centerY + Math.cos(rightAngle) * fovLength;
-
-      ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)'; // Gold with medium opacity
-      ctx.fillStyle = 'rgba(255, 215, 0, 0.15)'; // Gold with low opacity for fill
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(leftX, leftY);
-      // Draw arc from left to right angle
-      // Convert our angle system to canvas arc system: subtract PI/2 to align
-      ctx.arc(centerX, centerY, fovLength, -leftAngle + Math.PI / 2, -rightAngle + Math.PI / 2, false);
-      ctx.lineTo(centerX, centerY);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      // Draw coordinates
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.font = '9px monospace';
-      ctx.textAlign = 'left';
-      const coordText = `X: ${camera.position.x.toFixed(1)} Z: ${camera.position.z.toFixed(1)}`;
-      ctx.fillText(coordText, 5, height - 5);
-    }
-
-    function update() {
-      const cbStart = performance.now(); // ==== NEW: callback 计时开始 ====
-
-      requestAnimationFrame(update);
-
-      const dt = Math.min(clock.getDelta(), 0.05);
-      const speed = 0.5;
-      const dir = new THREE.Vector3();
-      camera.getWorldDirection(dir);
-      dir.y = 0; dir.normalize();
-      const right = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, 1, 0)).normalize();
-      camera.position.addScaledVector(dir, speed * (move.forward - move.back) * dt);
-      camera.position.addScaledVector(right, speed * (move.right - move.left) * dt);
-      camera.position.y += speed * (move.up - move.down) * dt;
-
-      if (dt > 1e-6) {
-        velocity.subVectors(camera.position, prevPos).divideScalar(dt);
-      } else {
-        velocity.set(0, 0, 0);
-      }
-
-      if (!isSceneLoading && staticSources.length > 0) {
-        updateStaticSources();
-      }
-      prevPos.copy(camera.position);
-
-      if (hasScene) {
-        viewer.update();
-        viewer.render();
-        labelRenderer.render(scene, camera);
-      }
-
-      if (minimapSceneLoaded) {
-        drawMinimap();
-      } else {
-        minimapCtx.clearRect(0, 0, minimapCanvas2D.width, minimapCanvas2D.height);
-      }
-
-      const cbEnd = performance.now();   // ==== NEW: callback 计时结束 ====
-      const cbDur = cbEnd - cbStart;    // 本帧 update 执行耗时 (ms)
-      cbAvgMs = cbAvgMs ? (1 - cbSmooth) * cbAvgMs + cbSmooth * cbDur : cbDur;
-
-      if (cbLastEl) cbLastEl.textContent = cbDur.toFixed(3);
-      if (cbAvgEl)  cbAvgEl.textContent  = cbAvgMs.toFixed(3);
-    }
-
-    let yaw = 0, pitch = 0;
-    const sensitivity = 0.002;
-    renderer.domElement.addEventListener('click', ()=>renderer.domElement.requestPointerLock());
-    document.addEventListener('pointerlockchange', ()=>{
+    document.addEventListener('pointerlockchange', () => {
       if (document.pointerLockElement === renderer.domElement) {
         document.addEventListener('mousemove', onMouseMove);
       } else {
         document.removeEventListener('mousemove', onMouseMove);
       }
     });
+
     function onMouseMove(e) {
-      yaw   -= e.movementX * sensitivity;
+      if (renderer.xr.isPresenting) return;
+
+      yaw -= e.movementX * sensitivity;
       pitch -= e.movementY * sensitivity;
-      pitch = Math.max(-Math.PI/2, Math.min(Math.PI/2, pitch));
+      pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+
       camera.rotation.order = 'YXZ';
       camera.rotation.y = yaw;
       camera.rotation.x = pitch;
     }
-    const move = { forward: 0, back: 0, left: 0, right: 0, up: 0, down: 0 };
+
     window.addEventListener('keydown', e => setMove(e.code, 1));
     window.addEventListener('keyup', e => setMove(e.code, 0));
+
     function setMove(code, v) {
       switch (code) {
         case 'KeyW': move.forward = v; break;
@@ -1862,6 +1765,68 @@
       }
     }
 
+    document.getElementById('toggleVolumeAudio').addEventListener('click', function () {
+      if (isUiLocked) return;
+      volumeAudio = !volumeAudio;
+      this.textContent = volumeAudio ? 'Volume Audio' : 'Point Audio';
+    });
+
+    document.getElementById('toggleStaticSourceVisibility').addEventListener('click', () => {
+      if (isUiLocked) return;
+      toggleCentroidVisibility();
+    });
+
+    document.getElementById('toggleClusterVisibility').addEventListener('click', () => {
+      if (isUiLocked) return;
+      toggleClusterVisibility();
+    });
+
+    document.getElementById('goToOrigin').addEventListener('click', () => {
+      if (isUiLocked) return;
+      resetCameraRigToOrigin();
+    });
+
+    playBtn.addEventListener('click', () => {
+      if (isUiLocked) return;
+      toggleAudioPlay();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (isUiLocked) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleAudioPlay();
+      }
+    });
+
+    document.querySelectorAll('.panel-title[data-target]').forEach(title => {
+      title.addEventListener('click', () => {
+        if (isUiLocked) return;
+
+        const body = document.getElementById(title.dataset.target);
+        const isCollapsed = body.classList.toggle('collapsed');
+        title.classList.toggle('collapsed', isCollapsed);
+      });
+    });
+
+    const controlPanel = document.getElementById('controlPanel');
+    const toggleBtn = document.getElementById('panelToggleBtn');
+
+    controlPanel.addEventListener('wheel', (e) => {
+      if (isUiLocked) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, { passive: false });
+
+    toggleBtn.addEventListener('click', () => {
+      if (isUiLocked) return;
+
+      controlPanel.classList.toggle('panel-collapsed');
+      updateLabelRendererClip();
+    });
+
     document.getElementById('loadGaussianScene').addEventListener('click', async function () {
       if (isSceneLoading) return;
       isSceneLoading = true;
@@ -1869,11 +1834,8 @@
       const requestId = ++sceneLoadRequestId;
       const sceneBase = document.getElementById('GsceneSelect').value;
       const selectedScene = sceneBase + '/3d/gaussian.compressed.ply';
-      const controlPanel = document.getElementById('controlPanel');
 
-      if (controlPanel) {
-        controlPanel.scrollTop = 0;
-      }
+      if (controlPanel) controlPanel.scrollTop = 0;
 
       try {
         stopCurrentSceneAudio();
@@ -1884,33 +1846,22 @@
         if (requestId !== sceneLoadRequestId) return;
 
         resetVisualizationState();
-
-        camera.position.set(0, 0, 0);
-        yaw = 0;
-        pitch = 0;
-        camera.rotation.order = 'YXZ';
-        camera.rotation.y = yaw;
-        camera.rotation.x = pitch;
-        prevPos.copy(camera.position);
+        resetCameraRigToOrigin();
 
         if (hasScene) {
           await viewer.removeSplatScene(0);
           if (requestId !== sceneLoadRequestId) return;
           hasScene = false;
-          console.log('Scene removed successfully');
         }
 
-        await viewer.addSplatScene(
-          selectedScene,
-          {
-            splatAlphaRemovalThreshold: 5,
-            showLoadingUI: true,
-            position: [0, 0, 0],
-            rotation: [1, 0, 0, 0],
-            scale: [1.0, 1.0, 1.0],
-            progressiveLoad: false,
-          },
-        );
+        await viewer.addSplatScene(selectedScene, {
+          splatAlphaRemovalThreshold: 5,
+          showLoadingUI: true,
+          position: [0, 0, 0],
+          rotation: [1, 0, 0, 0],
+          scale: [1.0, 1.0, 1.0],
+          progressiveLoad: false
+        });
 
         if (requestId !== sceneLoadRequestId) return;
 
@@ -1918,9 +1869,9 @@
 
         if (!hasStartedUpdateLoop) {
           hasStartedUpdateLoop = true;
-          requestAnimationFrame(update);
+          renderer.setAnimationLoop(updateLoop);
         }
-        
+
         await loadStaticSourceList(sceneBase, requestId);
         if (requestId !== sceneLoadRequestId) return;
 
@@ -1941,68 +1892,59 @@
       }
     });
 
-    const playBtn = document.getElementById('togglePlay');
+    renderer.xr.addEventListener('sessionstart', async () => {
+      const domIdsToHide = [
+        'controlPanel',
+        'panelToggleBtn',
+        'minimap',
+        'labelRendererLayer'
+      ];
 
-    function updatePlayButton() {
-      if (!audioCtx) {
-        playBtn.disabled = true;
-        playBtn.textContent = 'Play';
-        return;
-      }
-      playBtn.disabled = false;
-      playBtn.textContent = (audioCtx.state === 'running') ? 'Pause' : 'Play';
-    }
-
-    async function toggleAudioPlay() {
-      if (!audioCtx) return;
-      if (audioCtx.state === 'running') {
-        await audioCtx.suspend();
-      } else {
-        await audioCtx.resume();
-      }
-      updatePlayButton();
-    }
-
-    playBtn.addEventListener('click', () => {
-      if (isUiLocked) return;
-      toggleAudioPlay();
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (isUiLocked) return;
-
-      if (e.code === 'Space') {
-        e.preventDefault();
-        toggleAudioPlay();
-      }
-    });
-
-    // Collapsible panel sections
-    document.querySelectorAll('.panel-title[data-target]').forEach(title => {
-      title.addEventListener('click', () => {
-        if (isUiLocked) return;
-
-        const body = document.getElementById(title.dataset.target);
-        const isCollapsed = body.classList.toggle('collapsed');
-        title.classList.toggle('collapsed', isCollapsed);
+      domIdsToHide.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
       });
+
+      const title = document.querySelector('.title-banner');
+      if (title) title.style.display = 'none';
+
+      if (audioCtx && audioCtx.state !== 'running') {
+        try {
+          await audioCtx.resume();
+          updatePlayButton();
+        } catch (e) {}
+      }
+
+      camera.getWorldPosition(prevListenerPos);
     });
 
-    // Left panel collapse/expand
-    const controlPanel = document.getElementById('controlPanel');
-    const toggleBtn = document.getElementById('panelToggleBtn');
-    controlPanel.addEventListener('wheel', (e) => {
-      if (isUiLocked) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    }, { passive: false });
-    toggleBtn.addEventListener('click', () => {
-      if (isUiLocked) return;
+    renderer.xr.addEventListener('sessionend', () => {
+      const domIdsToShow = [
+        'controlPanel',
+        'panelToggleBtn',
+        'minimap',
+        'labelRendererLayer'
+      ];
 
-      controlPanel.classList.toggle('panel-collapsed');
+      domIdsToShow.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = '';
+      });
+
+      const title = document.querySelector('.title-banner');
+      if (title) title.style.display = '';
+
       updateLabelRendererClip();
     });
+
+    // Start a lightweight desktop render loop even before loading, so XR button remains responsive.
+    if (!hasStartedUpdateLoop) {
+      hasStartedUpdateLoop = true;
+      renderer.setAnimationLoop(updateLoop);
+    }
+
+    updatePlayButton();
+    updateAudioMetrics();
   </script>
 </body>
 </html>
