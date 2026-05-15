@@ -546,7 +546,7 @@
         </select>
         <button id="loadGaussianScene">Load Scene</button>
         <div class="vr-hint">
-          VR mode: left thumbstick moves, right thumbstick turns. Right trigger toggles clusters. Left trigger toggles centroids.
+          VR mode: left thumbstick moves horizontally. Right thumbstick turns and moves up/down. Right trigger toggles clusters. Left trigger toggles centroids.
         </div>
       </div>
     </div>
@@ -681,8 +681,6 @@
     dl.position.set(5, 10, 7);
     scene.add(dl);
 
-    // Important: WebXR uses a Y-up reference space. This page keeps the original scene files
-    // unchanged, but camera movement/head pose are handled in Y-up XR world coordinates.
     const renderWidth = window.innerWidth;
     const renderHeight = window.innerHeight;
     const clock = new THREE.Clock();
@@ -713,7 +711,7 @@
     camera.position.set(0, 0, 0);
     camera.up.set(0, 1, 0);
 
-    // XR rig: move/turn this group in VR. The headset writes the camera pose.
+    // XR rig: move/turn this group in VR. Camera, controllers, and grips must all live inside it.
     const xrRig = new THREE.Group();
     xrRig.position.set(0, 0, 0);
     scene.add(xrRig);
@@ -793,12 +791,17 @@
       const controller = renderer.xr.getController(i);
       controller.userData.index = i;
       controller.userData.selecting = false;
-      scene.add(controller);
+
+      // FIX: controllers must be children of xrRig, not scene.
+      // Otherwise they stay in the original world position while xrRig moves.
+      xrRig.add(controller);
       controllers.push(controller);
 
       const grip = renderer.xr.getControllerGrip(i);
       grip.add(controllerModelFactory.createControllerModel(grip));
-      scene.add(grip);
+
+      // FIX: controller models/grips must also move with xrRig.
+      xrRig.add(grip);
       controllerGrips.push(grip);
 
       controller.addEventListener('connected', (event) => {
@@ -1350,12 +1353,15 @@
       xrRig.position.set(0, 0, 0);
       xrRig.rotation.set(0, 0, 0);
 
-      camera.position.set(0, 0, 0);
-      yaw = 0;
-      pitch = 0;
-      camera.rotation.order = 'YXZ';
-      camera.rotation.y = yaw;
-      camera.rotation.x = pitch;
+      // FIX: in XR, headset controls camera pose. Do not force camera.position in immersive mode.
+      if (!renderer.xr.isPresenting) {
+        camera.position.set(0, 0, 0);
+        yaw = 0;
+        pitch = 0;
+        camera.rotation.order = 'YXZ';
+        camera.rotation.y = yaw;
+        camera.rotation.x = pitch;
+      }
 
       camera.getWorldPosition(prevListenerPos);
     }
@@ -1386,8 +1392,9 @@
       if (!renderer.xr.isPresenting) return;
 
       let moveX = 0;
-      let moveY = 0;
+      let moveZ = 0;
       let turnX = 0;
+      let moveUpDown = 0;
 
       for (const controller of controllers) {
         const input = controller.userData.inputSource;
@@ -1396,10 +1403,16 @@
         const stick = getStick(input);
 
         if (input.handedness === 'left') {
+          // Left thumbstick: horizontal movement.
           moveX = stick.x;
-          moveY = stick.y;
+          moveZ = stick.y;
         } else if (input.handedness === 'right') {
+          // Right thumbstick X: turn.
           turnX = stick.x;
+
+          // FIX: Right thumbstick Y: vertical movement.
+          // Push up/forward = move up, pull down/back = move down.
+          moveUpDown = -stick.y;
         }
       }
 
@@ -1410,11 +1423,16 @@
       forward.y = 0;
       if (forward.lengthSq() > 1e-8) forward.normalize();
 
-      const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+      const right = new THREE.Vector3()
+        .crossVectors(forward, new THREE.Vector3(0, 1, 0))
+        .normalize();
 
       const xrMoveSpeed = 1.0;
-      xrRig.position.addScaledVector(forward, -moveY * xrMoveSpeed * dt);
+      const xrVerticalSpeed = 1.0;
+
+      xrRig.position.addScaledVector(forward, -moveZ * xrMoveSpeed * dt);
       xrRig.position.addScaledVector(right, moveX * xrMoveSpeed * dt);
+      xrRig.position.y += moveUpDown * xrVerticalSpeed * dt;
 
       const turnSpeed = 1.8;
       xrRig.rotation.y -= turnX * turnSpeed * dt;
@@ -1462,7 +1480,6 @@
         viewer.update();
         viewer.render();
 
-        // DOM/CSS labels are desktop-only. They will not render into immersive WebXR.
         if (!renderer.xr.isPresenting) {
           labelRenderer.render(scene, camera);
         }
